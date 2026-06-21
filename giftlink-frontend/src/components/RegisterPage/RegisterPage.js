@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import {urlConfig} from "../../config";
+import {useAppContext} from "../../context/AuthContext";
+import {useNavigate} from "react-router-dom";
 
 import './RegisterPage.css';
 
@@ -7,9 +10,41 @@ function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showerr, setShowerr] = useState('');
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useAppContext();
+
 
     const handleRegister = async () => {
-        console.log("Register invoked")
+        try{
+            const response = await fetch(`${urlConfig.backendUrl}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    password: password,
+                }),
+            })
+            const data = await response.json();
+
+            if (data.authtoken) {
+                sessionStorage.setItem('auth-token', data.authtoken);
+                sessionStorage.setItem('name', firstName);
+                sessionStorage.setItem('email', data.email);
+                setIsLoggedIn(true);
+                navigate('/app');
+            }
+
+            if (data.error) {
+                setShowerr(data.error);
+            }
+        }catch (e) {
+            console.log("Error fetching details: " + e.message);
+        }
     }
 
     return (
@@ -81,6 +116,7 @@ function RegisterPage() {
                             Already a member? <a href="/app/login" className="text-primary">Login</a>
                         </p>
 
+                        <div className="text-danger">{showerr}</div>
                     </div>
                 </div>
             </div>
