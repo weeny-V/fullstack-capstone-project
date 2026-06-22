@@ -40,7 +40,7 @@ router.get('/:id', async (req, res) => {
         if (!gift) {
             return res.status(404).send('Gift not found');
         }
-        logger.info(gift)
+        logger.info(gift);
 
         res.json(gift);
     } catch (e) {
