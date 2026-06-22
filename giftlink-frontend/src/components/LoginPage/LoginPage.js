@@ -55,7 +55,7 @@ function LoginPage() {
         if (sessionStorage.getItem('auth-token')) {
             navigate('/app')
         }
-    }, []);
+    }, [navigate]);
 
     return (
         <div className="container mt-5">
